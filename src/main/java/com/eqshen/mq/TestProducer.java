@@ -3,14 +3,12 @@ package com.eqshen.mq;
 import com.eqshen.config.RabbitMqConfig;
 import com.eqshen.entity.MqRecord;
 import com.eqshen.enums.MqRecordStatusEnum;
-import com.eqshen.service.MqRecordService;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,8 +24,8 @@ import java.util.UUID;
 @Slf4j
 public class TestProducer {
 
-    @Autowired
-    private MqRecordService mqRecordService;
+//    @Autowired
+//    private MqRecordService mqRecordService;
 
     private RabbitTemplate rabbitTemplate;
 
@@ -40,8 +38,8 @@ public class TestProducer {
             public void confirm(CorrelationData correlationData, boolean ack, String cause) {
                 if(ack){
                     //更新消息发送记录表的状态，采用乐观锁，
-                    mqRecordService.updateRecordStatus(correlationData.getId(),
-                            MqRecordStatusEnum.SEND.getCode(),MqRecordStatusEnum.SEND_SUCCESS.getCode());
+//                    mqRecordService.updateRecordStatus(correlationData.getId(),
+//                            MqRecordStatusEnum.SEND.getCode(),MqRecordStatusEnum.SEND_SUCCESS.getCode());
                     log.info("[MQ]消息发送结果确认 ack:{},cause:{},correlationData:{}",ack,cause,correlationData);
                 }else{
                     log.error("[MQ]消息发送失败，ack:{},cause:{},correlationData:{}",ack,cause,correlationData);
@@ -79,7 +77,7 @@ public class TestProducer {
             mqRecord.setMsgId(key);
             mqRecord.setStatus(MqRecordStatusEnum.SEND.getCode());
             mqRecord.setDataId(reqId);
-            this.mqRecordService.businessSave(mqRecord);
+//            this.mqRecordService.businessSave(mqRecord);
 
             //Topic模式发送
             this.rabbitTemplate.convertAndSend(RabbitMqConfig.TEST_TOPIC_EXCHANGE,
